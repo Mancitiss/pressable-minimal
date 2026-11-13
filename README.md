@@ -81,25 +81,27 @@ For native devices, run `npm start` and connect using a client compatible with
 SDK 58 on the same network. `npm run android` opens an available Android
 emulator/device; `npm run ios` requires macOS for the simulator.
 
-## Check LogBox without keeping an extra button
+## Reproduce the multi-touch error
 
-Temporarily replace the existing `onPress` with:
+Reported environment: iPhone XS, iOS 16.7.2, Firefox 160.0.
 
-```tsx
-onPress={() => { throw Error('error'); }}
-```
+1. From the repository root, install dependencies and start the web app:
 
-Press anywhere on the screen. LogBox should show the error and stack trace. Restore the
-counter handler and reload when finished. The finished page keeps the counter
-handler, not this intentional error.
+   ```sh
+   npm ci
+   npx expo start --web --lan
+   ```
 
-Alternatively, in the browser's DevTools console, run:
+2. Connect the iPhone to the same network as the computer and open the computer's
+   LAN URL in Firefox (for example, `http://<computer-LAN-IP>:8081`, using the port
+   shown by Expo).
+3. Touch and release the full-screen Pressable with two or more fingers.
+4. Observe `Cannot find single active touch` in LogBox.
 
-```js
-setTimeout(() => { throw Error('error'); }, 0);
-```
+Expected: multi-touch is handled or cancelled without errors.
 
-The asynchronous error reaches the browser's unhandled-error listener.
+So far, this error has only been observed in Firefox on iOS. The page uses the
+default Pressable with a counter; no deliberate error is thrown by the app.
 
 ## Verify the project
 
